@@ -148,7 +148,7 @@
   function openCamera() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { setStatus('Δεν βρέθηκε κάμερα — χρησιμοποίησε «Ανέβασμα».', 'err'); return; }
     setHint('Άνοιγμα κάμερας…');
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
       .then(function (stream) {
         state.stream = stream;
         var v = document.querySelector('#pb-video'); v.srcObject = stream; v.play();

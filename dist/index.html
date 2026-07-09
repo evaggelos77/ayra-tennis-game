@@ -165,14 +165,14 @@
       .brand-frame img{max-width:100%;max-height:46px;object-fit:contain}
     </style>
     <script src="/qrcode.js?v=7"></script>
-    <script src="/photobooth.js?v=11"></script>
+    <script src="/photobooth.js?v=12"></script>
 
-    <!-- PERF MODE for weak GPUs (mini PC UHD630): active with ?perf or ?crowd=low. Render scale via ?rs= (default 0.6). -->
+    <!-- PERF: default balanced — cap DPR at 1 + shadows off (keeps full content & sharpness). ?rs=0.6 = aggressive render scale. ?full = no tweaks. -->
     <script>
       (function(){
         var q = location.search;
-        if (!/(?:^|[?&])(perf|crowd=low)/.test(q)) return;
-        var rs = 0.6; var m = q.match(/[?&]rs=([0-9.]+)/); if (m) rs = Math.max(0.35, Math.min(2, parseFloat(m[1])));
+        if (/[?&]full/.test(q)) return;
+        var rs = null; var m = q.match(/[?&]rs=([0-9.]+)/); if (m) rs = Math.max(0.35, Math.min(2, parseFloat(m[1])));
         var tries = 0;
         var iv = setInterval(function(){
           tries++;
@@ -181,10 +181,12 @@
             clearInterval(iv);
             try {
               var r = t.renderer;
+              var target = (rs !== null) ? rs : Math.min(1, window.devicePixelRatio || 1);
               var orig = r.setPixelRatio.bind(r);
-              r.setPixelRatio = function(){ orig(rs); };   // render at low scale (huge GPU relief on UHD630)
+              r.setPixelRatio = function(){ orig(target); };   // cap render resolution
+              r.setPixelRatio(target);
               r.setSize(window.innerWidth, window.innerHeight, false);
-              if (r.shadowMap) r.shadowMap.enabled = false; // drop shadow pass
+              if (r.shadowMap) r.shadowMap.enabled = false;    // drop shadow pass
             } catch(e){}
           } else if (tries > 120) { clearInterval(iv); }
         }, 100);
