@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#061015" />
+    <title>AYPA x POWERADE Tennis Challenge</title>
+    <script type="module" crossorigin src="/assets/index-DT9uF4yQ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CQLurTKr.css">
+  </head>
+  <body>
+    <main id="app" class="kiosk-shell">
+      <section id="gameView" class="game-view">
+        <canvas id="gameCanvas" aria-label="3D tennis court"></canvas>
+        <video id="cameraFeed" playsinline muted></video>
+
+        <div id="timeBar" class="time-bar" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;height:6px;background:rgba(4,16,30,.5);z-index:40;overflow:hidden;pointer-events:none"><span id="timeBarFill" style="display:block;height:100%;width:100%;transform-origin:left center;transform:scaleX(1);background:linear-gradient(90deg,#35d6ff,#1f6bff);box-shadow:0 0 12px rgba(53,214,255,.5);transition:background .3s ease"></span></div>
+        <div id="playOverlay" style="position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:38;display:none;flex-direction:column;align-items:center;gap:0;pointer-events:none;text-align:center">
+          <div id="playName" style="font-weight:900;font-size:clamp(13px,1.7vw,20px);color:#eaf6ff;text-shadow:0 2px 8px rgba(0,0,0,.65);letter-spacing:.02em;background:rgba(6,18,32,.42);padding:3px 14px;border-radius:999px"></div>
+          <div id="bigTimer" style="font-weight:900;font-size:clamp(40px,7vw,88px);line-height:1;color:#35d6ff;text-shadow:0 3px 16px rgba(53,214,255,.55);font-variant-numeric:tabular-nums;margin-top:2px">40</div>
+        </div>
+        <header class="hud">
+          <div class="hud-brand">
+            <img src="/assets/aypa-logo-clean.png" alt="AYPA" />
+            <span>Tennis Challenge</span>
+            <img src="/assets/powerade-logo-clean.png" alt="Powerade" />
+          </div>
+          <div class="hud-stats">
+            <div><span id="timerLabel">40</span><small>sec</small></div>
+            <div><span id="scoreLabel">0</span><small>score</small></div>
+            <div><span id="cpuLabel">0</span><small>cpu</small></div>
+            <div><span id="highLabel">0</span><small>high</small></div>
+          </div>
+        </header>
+
+        <div class="status-strip">
+          <span id="controlStatus">Pointer ready</span>
+          <span id="saveStatus">Local records ready</span>
+        </div>
+
+        <section id="setupPanel" class="panel setup-panel">
+          <div class="panel-header">
+            <img src="/assets/aypa-logo-clean.png" alt="AYPA" />
+            <div>
+              <p>AYPA x POWERADE</p>
+              <h1>3D Tennis Challenge</h1>
+            </div>
+          </div>
+          <div class="brand-frames">
+            <div class="brand-frame"><img src="/assets/avra-white.png" alt="ΑΥΡΑ" /></div>
+            <div class="brand-frame"><img src="/assets/powerade-white.png" alt="POWERADE" /></div>
+          </div>
+          <form id="playerForm" class="setup-grid">
+            <label>
+              <span>Ονοματεπώνυμο</span>
+              <input id="playerName" name="playerName" type="text" autocomplete="name" maxlength="42" required />
+            </label>
+            <label>
+              <span>Κινητό ή email</span>
+              <input id="playerContact" name="playerContact" type="text" autocomplete="email" maxlength="64" />
+            </label>
+            <div class="avatar-field">
+              <span>Avatar</span>
+              <div id="avatarChoices" class="avatar-grid"></div>
+            </div>
+            <div class="settings-field">
+              <span>Ρυθμίσεις παιχνιδιού</span>
+              <div class="settings-grid">
+                <label class="select-field">
+                  <span>Φωτισμός</span>
+                  <select id="timeOfDay" name="timeOfDay">
+                    <option value="night">Νύχτα</option>
+                    <option value="day">Μέρα</option>
+                  </select>
+                </label>
+                <label class="select-field">
+                  <span>Ταχύτητα</span>
+                  <select id="speedMode" name="speedMode">
+                    <option value="normal">Κανονικό</option>
+                    <option value="fast">Γρήγορο</option>
+                  </select>
+                </label>
+                <label class="select-field">
+                  <span>Δυσκολία</span>
+                  <select id="difficultyLevel" name="difficultyLevel">
+                    <option value="easy">Easy</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="hard">Hard</option>
+                  </select>
+                </label>
+                <label class="select-field">
+                  <span>Ήχος</span>
+                  <select id="soundMode" name="soundMode">
+                    <option value="on">On</option>
+                    <option value="off">Off</option>
+                  </select>
+                </label>
+                <label class="range-field">
+                  <span>Χρόνος <strong id="durationValue">40''</strong></span>
+                  <input id="gameDuration" name="gameDuration" type="range" min="30" max="60" step="10" value="40" />
+                </label>
+              </div>
+            </div>
+            <div class="consent-field">
+              <label class="consent-check">
+                <input type="checkbox" id="consentCheck" name="consentCheck" />
+                <span>Αποδέχομαι την καταχώρηση των στοιχείων μου (<strong>όνομα, email/κινητό, φωτογραφία</strong>) για τη δημιουργία του αναμνηστικού εξωφύλλου και τη συμμετοχή μου στη δράση ΑΥΡΑ × POWERADE. <button type="button" id="termsToggle" class="terms-link">Όροι &amp; Απόρρητο</button></span>
+              </label>
+              <div class="terms-text" id="termsText" hidden>
+                <h4>Όροι συμμετοχής &amp; Απόρρητο (GDPR)</h4>
+                <p>Με τη συμμετοχή σου, η δράση ΑΥΡΑ × POWERADE συλλέγει το όνομα, το email/κινητό και τη φωτογραφία σου αποκλειστικά για: (α) τη δημιουργία του ψηφιακού αναμνηστικού εξωφύλλου και (β) στατιστικά συμμετοχής της δράσης.</p>
+                <p>Τα δεδομένα φυλάσσονται μόνο για τη διάρκεια της δράσης και διαγράφονται μετά το πέρας της. Δεν διαβιβάζονται σε τρίτους για διαφημιστικούς σκοπούς.</p>
+                <p>Έχεις δικαίωμα πρόσβασης, διόρθωσης και διαγραφής των στοιχείων σου — απευθύνσου στο προσωπικό του booth.</p>
+                <p>Η συμμετοχή είναι προαιρετική. Χωρίς αποδοχή δεν είναι δυνατή η δημιουργία εξωφύλλου.</p>
+              </div>
+              <p class="consent-warn" id="consentWarn" hidden>⚠ Χρειάζεται η αποδοχή των όρων για να ξεκινήσεις.</p>
+            </div>
+            <div class="setup-actions">
+              <button id="cameraButton" class="secondary" type="button">Κάμερα / Χέρι</button>
+              <button id="bodyButton" class="secondary" type="button">Κάμερα / Σώμα</button>
+              <button id="kinectButton" class="secondary" type="button">Kinect Bridge</button>
+              <button id="startButton" class="primary" type="submit">Έναρξη 40''</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="gameOverPanel" class="panel result-panel hidden">
+          <div class="result-copy">
+            <p id="rankLabel">Game complete</p>
+            <h2 id="finalScore">0</h2>
+            <span id="finalMeta">High score updated</span>
+          </div>
+          <div class="result-content">
+            <div class="souvenir-card">
+              <img id="souvenirPreview" alt="Souvenir preview" />
+            </div>
+            <div class="qr-block">
+              <canvas id="qrCanvas" width="220" height="220"></canvas>
+              <a id="souvenirLink" class="primary link-button" href="#" target="_blank" rel="noreferrer">Άνοιγμα αναμνηστικού</a>
+              <a id="downloadSouvenir" class="secondary link-button" href="#" download="tennis-souvenir.png">Λήψη εικόνας</a>
+            </div>
+          </div>
+          <div class="leaderboard">
+            <div class="leaderboard-head">
+              <h3>High Scores</h3>
+              <button id="exportButton" class="ghost" type="button">CSV</button>
+            </div>
+            <ol id="leaderboardList"></ol>
+          </div>
+          <button id="restartButton" class="primary wide" type="button">Νέος γύρος</button>
+        </section>
+      </section>
+
+      <section id="souvenirView" class="souvenir-view hidden">
+        <div class="mobile-souvenir">
+          <img id="mobileSouvenirImage" alt="Tennis souvenir" />
+          <a id="mobileDownload" class="primary link-button" download="tennis-souvenir.png">Λήψη αναμνηστικού</a>
+        </div>
+      </section>
+    </main>
+
+    <style>#pb-capture{grid-column:1/-1}
+      .brand-frames{display:flex;gap:12px;margin:0 0 16px}
+      .brand-frame{flex:1;background:#0a1018;border:1px solid rgba(120,190,255,.18);border-radius:14px;padding:14px 20px;display:grid;place-items:center;min-height:66px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+      .brand-frame img{max-width:100%;max-height:46px;object-fit:contain}
+    </style>
+    <script src="/qrcode.js?v=7"></script>
+    <script src="/photobooth.js?v=11"></script>
+
+    <!-- PERF MODE for weak GPUs (mini PC UHD630): active with ?perf or ?crowd=low. Render scale via ?rs= (default 0.6). -->
+    <script>
+      (function(){
+        var q = location.search;
+        if (!/(?:^|[?&])(perf|crowd=low)/.test(q)) return;
+        var rs = 0.6; var m = q.match(/[?&]rs=([0-9.]+)/); if (m) rs = Math.max(0.35, Math.min(2, parseFloat(m[1])));
+        var tries = 0;
+        var iv = setInterval(function(){
+          tries++;
+          var t = window.__three;
+          if (t && t.renderer) {
+            clearInterval(iv);
+            try {
+              var r = t.renderer;
+              var orig = r.setPixelRatio.bind(r);
+              r.setPixelRatio = function(){ orig(rs); };   // render at low scale (huge GPU relief on UHD630)
+              r.setSize(window.innerWidth, window.innerHeight, false);
+              if (r.shadowMap) r.shadowMap.enabled = false; // drop shadow pass
+            } catch(e){}
+          } else if (tries > 120) { clearInterval(iv); }
+        }, 100);
+      })();
+    </script>
+
+    <!-- ATTRACT / WELCOME SCREEN (idle) -->
+    <style>
+      #attractScreen{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;background:#04070e;overflow:hidden;font-family:'Segoe UI',system-ui,Arial;opacity:1;transition:opacity .5s ease}
+      #attractScreen.hide{opacity:0;pointer-events:none}
+      #attractScreen .atr-bg{position:absolute;inset:-20%;background:radial-gradient(60% 55% at 50% 36%,rgba(31,107,255,.30),transparent 70%),radial-gradient(45% 40% at 82% 82%,rgba(255,59,59,.16),transparent 70%),radial-gradient(45% 40% at 14% 78%,rgba(53,214,255,.16),transparent 70%);animation:atrBreath 7s ease-in-out infinite}
+      @keyframes atrBreath{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.08);opacity:1}}
+      #attractScreen .atr-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(12px,2.2vh,26px);padding:24px;max-width:1100px}
+      #attractScreen .atr-logos{display:flex;gap:clamp(12px,2vw,26px)}
+      #attractScreen .atr-frame{background:#0a1018;border:1px solid rgba(120,190,255,.22);border-radius:16px;padding:clamp(9px,1.3vh,15px) clamp(18px,2.4vw,30px);display:grid;place-items:center;min-width:clamp(120px,15vw,210px)}
+      #attractScreen .atr-frame img{height:clamp(24px,3.4vh,44px);max-width:100%;object-fit:contain}
+      #attractScreen .atr-title{font-weight:900;letter-spacing:.02em;line-height:.95;font-size:clamp(42px,7.6vw,100px);color:#eaf6ff;text-shadow:0 4px 30px rgba(0,0,0,.5);margin:0}
+      #attractScreen .atr-title span{background-image:linear-gradient(90deg,#35d6ff,#1f6bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+      #attractScreen .atr-sub{margin:0;font-weight:800;font-size:clamp(17px,2.9vw,34px);color:#b8f34d;letter-spacing:.03em;text-shadow:0 2px 16px rgba(184,243,77,.25)}
+      #attractScreen .atr-covers{display:flex;gap:clamp(14px,2.5vw,34px);margin-top:clamp(2px,1vh,10px);align-items:flex-end}
+      #attractScreen .atr-cover{height:clamp(150px,23vh,270px);width:auto;border-radius:14px;background:#0a1120;box-shadow:0 0 0 1px rgba(120,190,255,.28),0 24px 50px rgba(0,8,22,.6)}
+      #attractScreen .atr-cover.c1{--r:-6deg;animation:atrFloat 4.4s ease-in-out infinite}
+      #attractScreen .atr-cover.c2{--r:-2deg;animation:atrFloat 4.4s ease-in-out .4s infinite}
+      #attractScreen .atr-cover.c3{--r:2deg;animation:atrFloat 4.4s ease-in-out .8s infinite}
+      #attractScreen .atr-cover.c4{--r:6deg;animation:atrFloat 4.4s ease-in-out 1.2s infinite}
+      @keyframes atrFloat{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-12px) rotate(var(--r))}}
+      #attractScreen .atr-start{margin-top:clamp(6px,1.4vh,16px);font-weight:900;font-size:clamp(21px,3.2vw,40px);letter-spacing:.04em;color:#04121f;background:linear-gradient(90deg,#39D7FF,#8fe9ff);border:none;border-radius:999px;padding:clamp(13px,2vh,22px) clamp(38px,6vw,80px);cursor:pointer;box-shadow:0 0 0 6px rgba(57,215,255,.12),0 18px 50px rgba(53,214,255,.4);animation:atrPulse 2.2s ease-in-out infinite}
+      @keyframes atrPulse{0%,100%{box-shadow:0 0 0 6px rgba(57,215,255,.12),0 18px 50px rgba(53,214,255,.4);transform:translateY(0)}50%{box-shadow:0 0 0 12px rgba(57,215,255,.05),0 22px 60px rgba(53,214,255,.55);transform:translateY(-3px)}}
+      #attractScreen .atr-hint{margin:0;color:#9db2d4;font-size:clamp(12px,1.6vw,17px);letter-spacing:.04em;opacity:.85}
+      @media(max-width:820px){#attractScreen .atr-cover.c1,#attractScreen .atr-cover.c4{display:none}}
+    </style>
+    <div id="attractScreen" role="dialog" aria-label="Καλωσόρισμα — Παίξε τέννις">
+      <div class="atr-bg" aria-hidden="true"></div>
+      <div class="atr-inner">
+        <div class="atr-logos">
+          <div class="atr-frame"><img src="/assets/avra-white.png" alt="ΑΥΡΑ"></div>
+          <div class="atr-frame"><img src="/assets/powerade-white.png" alt="POWERADE"></div>
+        </div>
+        <h1 class="atr-title">ΠΑΙΞΕ <span>ΤΕΝΝΙΣ</span></h1>
+        <p class="atr-sub">&amp; ΜΠΕΣ ΣΤΟ ΕΞΩΦΥΛΛΟ 🎾</p>
+        <div class="atr-covers">
+          <img class="atr-cover c1" src="/assets/cover-ayra-f.png" alt="Εξώφυλλο ΑΥΡΑ">
+          <img class="atr-cover c2" src="/assets/cover-pwr-m.png" alt="Εξώφυλλο POWERADE">
+          <img class="atr-cover c3" src="/assets/cover-ayra-m.png" alt="Εξώφυλλο ΑΥΡΑ">
+          <img class="atr-cover c4" src="/assets/cover-pwr-f.png" alt="Εξώφυλλο POWERADE">
+        </div>
+        <button id="attractStart" type="button" class="atr-start">▶ ΞΕΚΙΝΑ</button>
+        <p class="atr-hint">Άγγιξε την οθόνη για να παίξεις</p>
+      </div>
+    </div>
+    <script>
+      (function(){
+        var scr=document.getElementById("attractScreen");
+        if(!scr) return;
+        var start=document.getElementById("attractStart");
+        var restart=document.getElementById("restartButton");
+        function hide(){ scr.classList.add("hide"); }
+        function show(){ scr.classList.remove("hide"); }
+        if(start) start.addEventListener("click", function(e){ e.stopPropagation(); hide(); });
+        scr.addEventListener("click", hide);
+        if(restart) restart.addEventListener("click", function(){ setTimeout(show, 450); });
+      })();
+    </script>
+
+    <a id="statsBadge" href="/stats" target="_blank" rel="noopener" title="Συμμετοχές ανά μέρα — άνοιγμα πίνακα" style="position:fixed;left:12px;bottom:12px;z-index:60;display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:rgba(6,18,32,.55);border:1px solid rgba(120,190,255,.28);color:#cfe4ff;font:700 12px/1 'Segoe UI',system-ui,Arial;text-decoration:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:.7;transition:opacity .2s">
+      <span style="font-size:14px">📊</span><span>Σήμερα: <b id="statsBadgeN" style="color:#39D7FF">–</b></span>
+    </a>
+    <script>
+      (function(){
+        var badge=document.getElementById("statsBadge"), n=document.getElementById("statsBadgeN");
+        if(!badge||!n) return;
+        badge.addEventListener("mouseenter",function(){badge.style.opacity=1;});
+        badge.addEventListener("mouseleave",function(){badge.style.opacity=.7;});
+        function upd(){ fetch("/api/stats",{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){ n.textContent=(d&&d.todayCount)||0; }).catch(function(){}); }
+        upd(); setInterval(upd, 20000);
+      })();
+    </script>
+  </body>
+</html>

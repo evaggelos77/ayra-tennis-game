@@ -1,0 +1,10 @@
+{
+  "ayra": {
+    "m": { "file": "male.png",   "label": "ΑΥΡΑ Ανδρικό",   "url": "https://raw.githubusercontent.com/evaggelos77/ayra-tennis-covers/main/male.png" },
+    "f": { "file": "female.png", "label": "ΑΥΡΑ Γυναικείο", "url": "https://raw.githubusercontent.com/evaggelos77/ayra-tennis-covers/main/female.png" }
+  },
+  "powerade": {
+    "m": { "file": "powerade-male.png",   "label": "POWERADE Ανδρικό",   "url": "https://raw.githubusercontent.com/evaggelos77/ayra-tennis-covers/main/powerade-male.png" },
+    "f": { "file": "powerade-female.png", "label": "POWERADE Γυναικείο", "url": "https://raw.githubusercontent.com/evaggelos77/ayra-tennis-covers/main/powerade-female.png" }
+  }
+}

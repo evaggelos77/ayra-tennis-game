@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: ayra-tennis
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.mjs
+    envVars:
+      - key: AKOOL_API_KEY
+        sync: false
