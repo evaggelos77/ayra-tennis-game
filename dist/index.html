@@ -164,7 +164,15 @@
       .brand-frame img{max-width:100%;max-height:46px;object-fit:contain}
     </style>
     <script src="/qrcode.js?v=7"></script>
-    <script src="/photobooth.js?v=12"></script>
+    <style>
+      /* compact setup panel (easier with touchpad) */
+      #setupPanel .brand-frames{margin:0 0 8px}
+      #setupPanel .avatar-grid{gap:8px}
+      #setupPanel .settings-grid{gap:8px}
+      #setupPanel #pb-capture{margin:6px 0}
+      #setupPanel .consent-field{margin:6px 0}
+    </style>
+    <script src="/photobooth.js?v=13"></script>
 
     <!-- PERF: default balanced — cap DPR at 1 + shadows off (keeps full content & sharpness). ?rs=0.6 = aggressive render scale. ?full = no tweaks. -->
     <script>
